@@ -3,9 +3,6 @@
 ## Overview
 This project is a **simple Flask web application** with a form to submit user information and a SQLite database to store entries. It demonstrates **CI/CD deployment** to **AWS EC2** using **GitHub Actions**.
 
-**Resume Bullet:**  
-> Implemented CI/CD pipeline with GitHub Actions and AWS EC2, reducing deployment time from minutes to seconds.
-
 ---
 
 ## Features
@@ -53,11 +50,19 @@ if __name__ == '__main__':
 http://3.91.8.117>:5000/
 
 ```
+<img width="1920" height="1080" alt="Screenshot 2025-09-03 181134" src="https://github.com/user-attachments/assets/21fb1d2e-70f5-4f7d-b834-a76a2d7f7b9b" />
+<img width="1920" height="1080" alt="Screenshot 2025-09-03 181247" src="https://github.com/user-attachments/assets/08b3e841-eeef-49e5-8494-0572168dbdab" />
+<img width="1920" height="1080" alt="Screenshot 2025-09-03 181333" src="https://github.com/user-attachments/assets/3acdcc95-ca2b-4e97-8b37-57b8a403cb3c" />
+<img width="1920" height="1080" alt="Screenshot 2025-09-03 193139" src="https://github.com/user-attachments/assets/e4607cd2-d946-4fc5-b6c7-259a85a8ddff" />
+
+
 ### With Nginx reverse proxy configured:
 ```
 http://3.91.8.117
 
 ```
+<img width="1920" height="1080" alt="Screenshot 2025-09-03 182037" src="https://github.com/user-attachments/assets/2d896e46-9476-4d9b-a1c5-4283cc42d17c" />
+
 ### 4. Create systemd service on EC2
 ```
 sudo vim /etc/systemd/system/flask-app.service
@@ -118,6 +123,64 @@ sudo systemctl status flask-app
 journalctl -u flask-app -f
 
 ```
+### deploy.yml
 ```
 http://3.91.8.117
 ```
+```
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "~/flask-user-form"
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            cd ~/flask-user-form
+
+            echo " Updating packages"
+            sudo apt-get update -y
+            sudo apt-get install -y python3-venv python3-pip
+
+            echo "Setting up virtual environment"
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            source venv/bin/activate
+
+            echo "Upgrading pip"
+            pip install --upgrade pip setuptools wheel
+
+            echo "Installing dependencies"
+            pip install -r requirements.txt
+
+            echo "Restarting Flask app"
+            sudo systemctl daemon-reload
+            sudo systemctl restart flask-app
+            sudo systemctl enable flask-app
+```
+<img width="1920" height="1080" alt="Screenshot 2025-09-03 192941" src="https://github.com/user-attachments/assets/492ce3c3-81e6-4e97-9575-34017f84056f" />
