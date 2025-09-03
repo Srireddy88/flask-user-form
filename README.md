@@ -55,7 +55,7 @@ http://3.91.8.117>:5000/
 <img width="1920" height="1080" alt="Screenshot 2025-09-03 181333" src="https://github.com/user-attachments/assets/3acdcc95-ca2b-4e97-8b37-57b8a403cb3c" />
 
 
-### With Nginx reverse proxy configured:
+### With Nginx reverse proxy configured
 ```
 http://3.91.8.117
 
