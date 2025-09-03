@@ -1,4 +1,7 @@
-venv/
 __pycache__/
 *.pyc
-data.db
+venv/
+*.sqlite3
+
+# System files
+*.DS_Store
