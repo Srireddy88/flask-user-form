@@ -1,0 +1,22 @@
+<!-- templates/list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>All Entries</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <h1>All Submitted Entries</h1>
+    {% if users %}
+        <ul>
+        {% for name, email in users %}
+            <li><strong>{{ name }}</strong> - {{ email }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No entries yet.</p>
+    {% endif %}
+    <p><a href="/">Back to form</a></p>
+</body>
+</html>
