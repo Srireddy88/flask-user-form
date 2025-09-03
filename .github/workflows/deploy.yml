@@ -1,1 +1,55 @@
 
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "~/flask-user-form"
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            cd ~/flask-user-form
+
+            echo "📦 Updating packages"
+            sudo apt-get update -y
+            sudo apt-get install -y python3-venv python3-pip
+
+            echo "🌱 Setting up virtual environment"
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            source venv/bin/activate
+
+            echo "⬆️ Upgrading pip"
+            pip install --upgrade pip setuptools wheel
+
+            echo "📂 Installing dependencies"
+            pip install -r requirements.txt
+
+            echo "🔄 Restarting Flask app"
+            sudo systemctl daemon-reload
+            sudo systemctl restart flask-app
+            sudo systemctl enable flask-app
