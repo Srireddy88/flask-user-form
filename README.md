@@ -53,7 +53,6 @@ http://3.91.8.117>:5000/
 <img width="1920" height="1080" alt="Screenshot 2025-09-03 181134" src="https://github.com/user-attachments/assets/21fb1d2e-70f5-4f7d-b834-a76a2d7f7b9b" />
 <img width="1920" height="1080" alt="Screenshot 2025-09-03 181247" src="https://github.com/user-attachments/assets/08b3e841-eeef-49e5-8494-0572168dbdab" />
 <img width="1920" height="1080" alt="Screenshot 2025-09-03 181333" src="https://github.com/user-attachments/assets/3acdcc95-ca2b-4e97-8b37-57b8a403cb3c" />
-<img width="1920" height="1080" alt="Screenshot 2025-09-03 193139" src="https://github.com/user-attachments/assets/e4607cd2-d946-4fc5-b6c7-259a85a8ddff" />
 
 
 ### With Nginx reverse proxy configured:
