@@ -29,19 +29,28 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e  # stop on first error
             cd ~/flask-user-form
 
-            # Create venv if not exists
-            if [ ! -d "venv" ]; then
-              python3 -m venv venv
-            fi
+            echo "📦 Installing Python venv + pip"
+            sudo apt-get update -y
+            sudo apt-get install -y python3-venv python3-pip
 
+            echo "🧹 Cleaning old venv"
+            rm -rf venv
+
+            echo "🌱 Creating fresh venv"
+            python3 -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip
+
+            echo "⬆️ Upgrading pip/setuptools/wheel"
+            pip install --upgrade pip setuptools wheel
+
+            echo "📂 Installing dependencies"
             pip install -r requirements.txt
 
-            # Kill old Flask process
+            echo "🛑 Stopping old Flask process (if any)"
             pkill -f "python3 app.py" || true
 
-            # Start new Flask process
+            echo "🚀 Starting new Flask app"
             nohup python3 app.py > app.log 2>&1 &
